@@ -2,4 +2,5 @@
 
 int main(){
   std::cout << "Hello world, can you see me?";
+  return 0;
 }
