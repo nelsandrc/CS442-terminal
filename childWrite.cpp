@@ -22,16 +22,17 @@ int main()
 		exit(1);
 
 	if ((pid = fork()) > 0) {
+		close(p[0]);
 		write(p[1], fullName, MSGSIZE);
 		write(p[1], department, MSGSIZE);
 		write(p[1], email, MSGSIZE);
 	}
 	else {
+		close(p[1]);
         while ((nbytes = read(p[0], inbuf, MSGSIZE)) > 0) 
             printf("% s\n", inbuf); 
         if (nbytes != 0) 
             exit(2); 
-        printf("Finished reading\n"); 
     } 
     return 0; 
 }
