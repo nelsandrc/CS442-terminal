@@ -4,6 +4,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <vector>
 #define MAX_SIZE 256
 
@@ -68,14 +69,17 @@ void runCommand(std::string userSelection){
 	char* currentToken = std::strtok(cstring_conversion, " \n\t\r");
 	
 	while (currentToken != nullptr) {
-		tokenizedCstring.push_back(currentToken);
+		tokenizedString.push_back(currentToken);
 		currentToken = std::strtok(NULL, " ,\n\t\r.");
 	}
 
-	for (int i = 0; i < tokenizedCstring.size(); ++i) {
-		std::cout << tokenizedCstring[i] << std::endl;
+	for (int i = 0; i < tokenizedString.size(); ++i) {
+		std::cout << tokenizedString[i] << std::endl;
 	}
-	
+	// INITIALIZE VARIABLES
+	char * commandString[3];
+	std::string command= tokenizedString[0];   // this is the ls unix command
+	std::string argument1= tokenizedString[1];  // this is an argument for the ls
 
 	commandString[0]=(char*) command.c_str();  //this is how to conver a string variable to a c_string
 	commandString[1]=(char*) argument1.c_str();       
@@ -88,14 +92,13 @@ void runCommand(std::string userSelection){
 			if (execvp(commandString[0], commandString) < 0) {    // try to change the execution impage of the child
 				//here using the execvp, the impage of execution will be replaced for the child by: ls -l. 
 				//If it returns a negative value, that means something went wrong
-				cout<<"*** ERROR: exec failed\n";     
+				std::cout<<"*** ERROR: exec failed\n";     
 				exit(1);
 			}
-		cout<<"A New Child was created J \n";  // will not execute this line since  //image of execution has been changed by execvp system call
+		std::cout<<"A New Child was created J \n";  // will not execute this line since  //image of execution has been changed by execvp system call
 	 } 
 	 else if (pid < 0)   {   // no new child was created (fail)
-			cout<<"No New Child Was created L\n"; 
-			return 1;
+			std::cout<<"No New Child Was created L\n"; 
 	}
 	else // must be the parent
 	{  
