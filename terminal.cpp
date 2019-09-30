@@ -4,18 +4,22 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
+#include <vector>
 #define MAX_SIZE 256
 
 int main()
 {
 	std::string userSelection = "";
 	std::string commandName = "";
+	std::vector <std::string> history;
+	
 	std::cout << "Starting terminal program. Type helpME for nonstandard command list.\n"
 			  << "Enter all one token commands with a trailing space.\n";
 	while (true) {
 		std::cout << ">";
 		std::getline(std::cin, userSelection);
 		commandName = userSelection.substr(0, userSelection.find(" "));
+		history.push_back(userSelection);
 
 		if (commandName == "exit" || commandName == "Exit") {//Ends the terminal program.
 			std::cout << "Terminal closing now.\n";
@@ -35,7 +39,10 @@ int main()
 					  << "1: \'history\' - Prints the list of past commands.\n";
 		}
 		else if (commandName == "history") {//Prints the list of past commands.
-			std::cout << "history\n";
+			std::cout << "History: \n";
+			for(int i = 0; i < history.size(); i++){
+				std::cout << i+1 << ":  " << history[i] << std::endl;
+			}
 		}
 		else {//Run given command using execvp
 			std::cout << "other command\n";
@@ -72,11 +79,6 @@ int main()
 			}
 */
 		}
-
-
-
-
-
 	}
 	return 1;
 }
