@@ -38,7 +38,7 @@ int main()
 			
 			std::cout <<  "Current working dir: " << cwd << std::endl;
 		}
-		else if (commandName == "helpMe") {//Print the command list of nonstandard commands.
+		else if (commandName == "helpME") {//Print the command list of nonstandard commands.
 			std::cout << "Command List:\n"
 					  << "1: history- Prints the list of past commands.\n";
 		}
