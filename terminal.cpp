@@ -12,8 +12,7 @@ void printHistory(std::vector<std::string> history);
 void runCommand(std::string userSelection);
 
 
-int main()
-{
+int main(){
 	std::string userSelection = "";
 	std::string commandName = "";
 	std::vector <std::string> history;
@@ -73,17 +72,28 @@ void runCommand(std::string userSelection){
 		currentToken = std::strtok(NULL, " ,\n\t\r.");
 	}
 
-	for (int i = 0; i < tokenizedString.size(); ++i) {
-		std::cout << tokenizedString[i] << std::endl;
-	}
 	// INITIALIZE VARIABLES
-	char * commandString[3];
+	
+	char * commandString[1000];
+	std::string temp;
+	for (int i = 0; i < tokenizedString.size(); i++) {
+		temp = tokenizedString[i];
+		commandString[i] =(char*) temp.c_str();
+	}
+
+	for (int i = 0; i < tokenizedString.size(); ++i) {
+		std::cout << commandString[i] << std::endl;
+	}
+
+	/*
 	std::string command= tokenizedString[0];   // this is the ls unix command
 	std::string argument1= tokenizedString[1];  // this is an argument for the ls
 
 	commandString[0]=(char*) command.c_str();  //this is how to conver a string variable to a c_string
 	commandString[1]=(char*) argument1.c_str();       
 	commandString[2]=NULL;
+	*/
+
 
 	 pid = fork();
 
