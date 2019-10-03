@@ -74,7 +74,7 @@ void runCommand(std::string userSelection){
 
 	// INITIALIZE VARIABLES
 	
-	char * commandString[1000];
+	char* commandString[tokenizedString.size()+1];
 	std::string temp;
 	for (int i = 0; i < tokenizedString.size(); i++) {
 		temp = tokenizedString[i];
