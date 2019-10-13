@@ -11,29 +11,22 @@
 
 void printHistory(std::vector<std::string> history);
 void runCommand(std::string userSelection);
-void runPipe(std::string userSelection);
 
 
-int main()
-{
+int main(){
 	std::string userSelection = "";
 	std::string commandName = "";
 	std::vector <std::string> history;
-	bool isPipe = false;
 	
-	std::cout << "Starting terminal program. Type helpMe for nonstandard command list.\n"
+	std::cout << "Starting terminal program. Type helpME for nonstandard command list.\n"
 			  << "Enter all one token commands with a trailing space.\n";
 	while (true) {
 		std::cout << ">";
 		std::getline(std::cin, userSelection);
 		commandName = userSelection.substr(0, userSelection.find(" "));
-		isPipe = (userSelection.find('|') != std::string::npos); //Determines if command includes a pipe for different handling.
 		history.push_back(userSelection);
 
-		if(isPipe){
-			runPipe(userSelection);
-		}
-		else if (commandName == "exit" || commandName == "Exit") {//Ends the terminal program.
+		if (commandName == "exit" || commandName == "Exit") {//Ends the terminal program.
 			std::cout << "Terminal closing now.\n";
 			return 0;
 
@@ -45,7 +38,7 @@ int main()
 			
 			std::cout <<  "Current working dir: " << cwd << std::endl;
 		}
-		else if (commandName == "helpMe") {//Print the command list of nonstandard commands.
+		else if (commandName == "helpME") {//Print the command list of nonstandard commands.
 			std::cout << "Command List:\n"
 					  << "1: history- Prints the list of past commands.\n";
 		}
@@ -54,40 +47,9 @@ int main()
 		}
 		else {//Run given command using execvp
 			runCommand(userSelection);
-			std::cout << "line 57 post run\n";
 		}
 	}
 	return 1;
-}
-
-void runPipe(std::string userSelection){
-	int splitIndex = userSelection.find('|');
-	std::string firstCommand = userSelection.substr(0,splitIndex);
-	std::string secondCommand = userSelection.substr(splitIndex+1);
-	
-	int p[2], pid, nbytes;
-	
-	if (pipe(p) < 0)
-		exit(1);
-
-	if ((pid = fork()) > 0) {//In parent
-		wait(0);
-		close(p[1]);	//Close writing side of pipe
-		dup2(p[0],0); //Change stdin to pipe
-		runCommand(secondCommand);
-	}
-	else if(pid ==0){
-		close(p[0]);
-		dup2(p[1], 1);
-		runCommand(firstCommand);
-    } 
-	else{
-		printf("Fork failed\n");
-		exit(2);
-	}
-	
-	
-	
 }
 
 void printHistory(std::vector<std::string> history){
@@ -100,7 +62,7 @@ void printHistory(std::vector<std::string> history){
 void runCommand(std::string userSelection){
 	pid_t  pid;  
     int size = userSelection.length(); // Size to make char array
-    char charArray[50]; // char array
+    char charArray[size + 1]; // char array
     strcpy(charArray, userSelection.c_str()); // setting char array to string
     // Iterate over array to get rid of escape sequences
     // Normalizes all unwanted chars
@@ -127,7 +89,7 @@ void runCommand(std::string userSelection){
     }
     // c_string array final answer
 	int tsize = tokens.size();
-    char *a[50];
+    char *a[tsize + 1];
 	a[tsize] = NULL;
     for (int l = 0; l < tsize; l++) {
         strcpy(a[l],tokens[l].c_str());
