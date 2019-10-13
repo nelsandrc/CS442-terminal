@@ -62,7 +62,7 @@ void printHistory(std::vector<std::string> history){
 void runCommand(std::string userSelection){
 	pid_t  pid;  
     int size = userSelection.length(); // Size to make char array
-    char charArray[size + 1]; // char array
+    char charArray[50]; // char array
     strcpy(charArray, userSelection.c_str()); // setting char array to string
     // Iterate over array to get rid of escape sequences
     // Normalizes all unwanted chars
@@ -89,7 +89,7 @@ void runCommand(std::string userSelection){
     }
     // c_string array final answer
 	int tsize = tokens.size();
-    char *a[tsize + 1];
+    char *a[50];
 	a[tsize] = NULL;
     for (int l = 0; l < tsize; l++) {
         strcpy(a[l],tokens[l].c_str());
