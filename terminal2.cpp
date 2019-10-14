@@ -60,8 +60,8 @@ void printHistory(std::vector<std::string> history){
 }
 
 void runCommand(std::string userSelection){
-	pid_t  pid;  
-    int size = userSelection.length(); // Size to make char array
+	
+	int size = userSelection.length(); // Size to make char array
     char charArray[size + 1]; // char array
     strcpy(charArray, userSelection.c_str()); // setting char array to string
     // Iterate over array to get rid of escape sequences
@@ -88,16 +88,15 @@ void runCommand(std::string userSelection){
         }
     }
     // c_string array final answer
-	int tsize = tokens.size();
-    char *a[tsize + 1];
-	a[tsize] = NULL;
-    for (int l = 0; l < tsize; l++) {
-        strcpy(a[l],tokens[l].c_str());
+    char* a[tokens.size() + 1];
+	a[tokens.size()] = NULL;
+    for (int l = 0; l < tokens.size(); l++) {
+        a[l] = (char*) tokens[l].c_str();
     }
 	
-	 pid = fork();
+	int pid = fork();
 
-	 if (pid == 0) { // a child was created and you are inside it J
+	if (pid == 0) { // a child was created and you are inside it J
 		if (execvp(a[0], a) < 0) {    // try to change the execution impage of the child
 			//here using the execvp, the impage of execution will be replaced for the child by: ls -l. 
 			//If it returns a negative value, that means something went wrong
@@ -105,8 +104,8 @@ void runCommand(std::string userSelection){
 			exit(1);
 		}
 		std::cout<<"A New Child was created J \n";  // will not execute this line since  //image of execution has been changed by execvp system call
-	 } 
-	 else if (pid < 0)   {   // no new child was created (fail)
+	} 
+	else if (pid < 0)   {   // no new child was created (fail)
 			std::cout<<"No New Child Was created L\n"; 
 	}
 	else // must be the parent
