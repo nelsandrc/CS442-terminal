@@ -7,8 +7,10 @@
 #include <sys/wait.h>
 #include <vector>
 #include <type_traits>
+#include <fcntl.h>
 #define MAX_SIZE 256
 
+void changeIO(int io, char* file);
 void printHistory(std::vector<std::string> history);
 void runCommand(std::string userSelection);
 
@@ -60,7 +62,8 @@ void printHistory(std::vector<std::string> history){
 }
 
 void runCommand(std::string userSelection){
-	
+	int originIN = dup(0);
+	int originOUT = dup(1);
 	int size = userSelection.length(); // Size to make char array
     char charArray[size + 1]; // char array
     strcpy(charArray, userSelection.c_str()); // setting char array to string
@@ -79,8 +82,16 @@ void runCommand(std::string userSelection){
         // Or if j is at the end of the charArray and temp is NOT empty
         // Store temp into tokens and clear temp
         if (((charArray[j] == ' ') && (temp.size() != 0)) || ((j == size) && (temp.size() != 0))) {
-            std::string word(temp.begin(), temp.end());
-            tokens.push_back(word);
+            if (temp[0] == '<') {
+				std::string word(temp.begin() + 1, temp.end());
+				changeIO(0,(char*)word.c_str());
+			} else if (temp[0] == '>') {
+				std::string word(temp.begin() + 1, temp.end());
+				changeIO(1,(char*)word.c_str());
+			} else {
+				std::string word(temp.begin(), temp.end());
+            	tokens.push_back(word);
+			}
             temp.clear();
         } // If not space, store it in temp 
         else if (charArray[j] != ' '){
@@ -111,6 +122,28 @@ void runCommand(std::string userSelection){
 	else // must be the parent
 	{  
 		wait(0); // must wait for a child to finish
+		dup2(originIN, 0);
+		dup2(originOUT, 1);
 		//cout<<"I am the parent :)\n";   
 	}
+}
+
+void changeIO(int io, char* file) {
+    int fd;
+    // If changing input
+    if (io == 0) {
+        fd = open(file, O_RDONLY);
+    } else if (io == 1) {
+        fd = open(file, O_WRONLY | O_APPEND);
+    } 
+	else {
+        std::cout << "Invalid io value" << std::endl;
+        return;
+    }
+    if (fd < 0) {
+        std::cout << "Can not open the file" << std::endl;
+       return;
+    }
+    dup2(fd,io);
+    close(fd);
 }
