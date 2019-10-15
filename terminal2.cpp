@@ -13,24 +13,32 @@
 void changeIO(int io, char* file);
 void printHistory(std::vector<std::string> history);
 void runCommand(std::string userSelection);
+void runPipe(std::string userSelection);
 
 
 int main(){
 	std::string userSelection = "";
 	std::string commandName = "";
 	std::vector <std::string> history;
+	bool isPipe = false;
+	bool cont = true;
 	
 	std::cout << "Starting terminal program. Type helpME for nonstandard command list.\n"
 			  << "Enter all one token commands with a trailing space.\n";
-	while (true) {
+	while (cont == true ) {
 		std::cout << ">";
 		std::getline(std::cin, userSelection);
 		commandName = userSelection.substr(0, userSelection.find(" "));
 		history.push_back(userSelection);
-
-		if (commandName == "exit" || commandName == "Exit") {//Ends the terminal program.
+		isPipe = (userSelection.find('|') != std::string::npos); //Determines if command includes a pipe for different handling.
+		
+		if(isPipe){
+			runPipe(userSelection);
+		}
+		else if (commandName == "exit" || commandName == "Exit") {//Ends the terminal program.
 			std::cout << "Terminal closing now.\n";
-			return 0;
+			cont = false;	
+			exit(0);
 
 		}
 		else if (commandName == "pwd") {//Prints the current working directory.
@@ -52,6 +60,33 @@ int main(){
 		}
 	}
 	return 1;
+}
+
+void runPipe(std::string userSelection){
+	int splitIndex = userSelection.find('|');
+	std::string firstCommand = userSelection.substr(0,splitIndex);
+	std::string secondCommand = userSelection.substr(splitIndex+1);
+	std::cout << "First command: " << firstCommand << "\nSecond command: " << secondCommand << std::endl;
+
+	int p[2], pid, nbytes;
+
+	if (pipe(p) < 0)
+		exit(1);
+	pid = fork();
+	if (pid == 0){
+		runCommand(firstCommand);
+		
+	}
+	else {
+		wait(0);
+	}
+	pid = fork();
+	if (pid == 0){
+		runCommand(secondCommand);
+	}
+	else {
+		wait(0);
+	}
 }
 
 void printHistory(std::vector<std::string> history){
